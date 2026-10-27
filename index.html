@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quiet Ask — anonymous peer advice for scholars</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{--bg:#f7f3ec;--surface:#fffdf9;--ink:#1d2433;--muted:#667085;--line:#e6dfd2;--accent:#1f5f5b;--accent-ink:#fff;--warm:#d9644a;--chip:#efe8da;--shadow:0 1px 2px rgba(29,36,51,.06),0 6px 20px rgba(29,36,51,.05);
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161f;--surface:#1a202c;--ink:#ece8df;--muted:#9aa3b2;--line:#2b3445;--accent:#5fb8ae;--accent-ink:#0d1a19;--warm:#f08a72;--chip:#242c3b;--shadow:none}}
+:root[data-theme="dark"]{--bg:#12161f;--surface:#1a202c;--ink:#ece8df;--muted:#9aa3b2;--line:#2b3445;--accent:#5fb8ae;--accent-ink:#0d1a19;--warm:#f08a72;--chip:#242c3b;--shadow:none}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:720px;margin:0 auto;padding:28px 18px 64px}
+h1,h2,h3{font-family:Fraunces,Georgia,"Times New Roman",serif;font-weight:600;line-height:1.2;margin:0}
+h1{font-size:clamp(30px,6vw,42px);letter-spacing:-.01em}
+.tag{color:var(--muted);margin:8px 0 0;font-size:17px;max-width:52ch}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow)}
+.note{margin:22px 0;display:flex;gap:12px;font-size:14px;color:var(--muted)}
+.note b{color:var(--ink)}
+label{display:block;font-size:13px;font-weight:600;margin:12px 0 5px}
+input,textarea,select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+input:focus,textarea:focus,select:focus,button:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+textarea{min-height:110px;resize:vertical}
+.row{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:14px;flex-wrap:wrap}
+button{font:inherit;cursor:pointer;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);padding:8px 16px;font-weight:500}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+button:disabled{opacity:.5;cursor:not-allowed}
+button.link{border:0;padding:4px 6px;color:var(--muted);font-size:13px}
+button.danger{color:var(--warm)}
+.hint{font-size:12px;color:var(--muted)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 0 10px;margin:24px 0 6px}
+.chip{white-space:nowrap;background:var(--chip);border-color:transparent;font-size:14px;padding:6px 13px}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.post{margin-top:12px;cursor:pointer;transition:transform .12s}
+.post:hover{transform:translateY(-1px)}
+.cat{display:inline-block;font-size:12px;font-weight:600;color:var(--accent);background:var(--chip);border-radius:999px;padding:2px 10px}
+.post h3{font-size:20px;margin:10px 0 6px}
+.snip{color:var(--muted);margin:0;white-space:pre-wrap;overflow-wrap:anywhere}
+.meta{font-size:13px;color:var(--muted);margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.who{font-weight:600;color:var(--ink)}
+.reply{border-left:3px solid var(--line);padding:4px 0 4px 14px;margin:16px 0}
+.reply p{margin:4px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.op{color:var(--warm);font-size:12px;font-weight:600}
+.empty{text-align:center;color:var(--muted);padding:36px 12px}
+.banner{background:var(--chip);border-radius:12px;padding:12px 14px;font-size:14px;margin-top:16px}
+.crisis{font-size:13px;color:var(--muted);margin-top:36px;text-align:center}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Quiet Ask</h1>
+    <p class="tag">Write anything. No names attached. An anonymous platform to get help from fellow Pearson scholars who’ve been where you are.</p>
+  </header>
+
+  <div class="note card"><span aria-hidden="true">🕊️</span><div><b>Asking for help is part of being ambitious.</b> Posts show only a random handle like “Calm Heron”. Please keep it kind, avoid naming people, and don’t share identifying details about yourself or others.</div></div>
+
+  <div id="banner" class="banner" hidden></div>
+
+  <section class="card" id="composer" aria-label="Ask for advice">
+    <h2 style="font-size:22px">What’s on your mind?</h2>
+    <label for="cat">Topic</label>
+    <select id="cat"></select>
+    <label for="title">Your question</label>
+    <input id="title" maxlength="120" placeholder="e.g. How do you ask a professor for a recommendation?">
+    <label for="body">Details <span class="hint">(optional, but they help)</span></label>
+    <textarea id="body" maxlength="2000" placeholder="Share as much context as you’re comfortable with."></textarea>
+    <div class="row"><span class="hint">Posted anonymously to other scholars.</span><button class="primary" id="postBtn">Post anonymously</button></div>
+  </section>
+
+  <div id="feedView">
+    <div class="chips" id="chips" role="group" aria-label="Filter by topic"></div>
+    <div id="feed"></div>
+  </div>
+
+  <div id="threadView" hidden>
+    <button class="link" id="back" style="margin:22px 0 8px">← Back to all questions</button>
+    <article class="card" id="threadPost"></article>
+    <h2 style="font-size:20px;margin:26px 0 0" id="replyHead">Advice</h2>
+    <div id="replyList"></div>
+    <div class="card" style="margin-top:16px">
+      <label for="replyText" style="margin-top:0">Share your advice</label>
+      <textarea id="replyText" maxlength="1000" style="min-height:80px" placeholder="What worked for you? Be kind and specific."></textarea>
+      <div class="row"><span class="hint">Your reply is anonymous too.</span><button class="primary" id="replyBtn">Reply anonymously</button></div>
+    </div>
+  </div>
+
+  <p class="crisis">If you or someone you know is in crisis, please reach out to a trusted person, your campus support team or local emergency services right away. This space is for peer advice, not emergency help.</p>
+</div>
+
+<script>
+const CATS=["Academics","Mental health & stress","Applications & scholarships","Career & internships","Money & logistics","Friends & social life","Other"];
+const ADJ=["Calm","Bright","Curious","Brave","Gentle","Steady","Quiet","Sunny","Clever","Kind","Bold","Patient"];
+const ANI=["Heron","Fox","Otter","Owl","Lynx","Finch","Panda","Falcon","Dolphin","Hare","Swift","Maple"];
+const $=id=>document.getElementById(id);
+let db=null,uid=null,canWrite=true,isMod=false,posts=[],replies=[],filter="All",openId=null,unsubReplies=null,confirmDel=null;
+
+function esc(s){const d=document.createElement("div");d.textContent=s==null?"":String(s);return d.innerHTML}
+function hash(s){let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return Math.abs(h)}
+function handle(owner,postId){const h=hash(String(owner||"x")+"|"+postId);return ADJ[h%ADJ.length]+" "+ANI[(h>>4)%ANI.length]}
+function ago(t){const s=Math.max(1,(Date.now()-(t||0))/1000);if(s<60)return"just now";if(s<3600)return Math.floor(s/60)+" min ago";if(s<86400)return Math.floor(s/3600)+" h ago";return Math.floor(s/86400)+" d ago"}
+function banner(msg){const b=$("banner");b.textContent=msg;b.hidden=!msg}
+
+$("cat").innerHTML=CATS.map(c=>`<option>${esc(c)}</option>`).join("");
+
+function renderChips(){
+  $("chips").innerHTML=["All",...CATS].map(c=>`<button class="chip" aria-pressed="${c===filter}" data-c="${esc(c)}">${esc(c)}</button>`).join("");
+}
+$("chips").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;filter=b.dataset.c;renderChips();renderFeed()});
+
+function renderFeed(){
+  const list=posts.filter(p=>filter==="All"||p.category===filter);
+  if(!list.length){$("feed").innerHTML=`<div class="empty">${db?"No questions here yet. Be the first to ask — someone else is probably wondering the same thing.":"Posts will appear here once the page connects."}</div>`;return}
+  $("feed").innerHTML=list.map(p=>`<article class="card post" data-id="${esc(p.id)}" tabindex="0" role="button">
+    <span class="cat">${esc(p.category||"Other")}</span>
+    <h3>${esc(p.title)}</h3>
+    ${p.body?`<p class="snip">${esc(p.body.length>220?p.body.slice(0,220)+"…":p.body)}</p>`:""}
+    <div class="meta"><span class="who">${esc(handle(p.owner,p.id))}</span><span>·</span><span>${ago(p.createdAt)}</span></div></article>`).join("");
+}
+$("feed").addEventListener("click",e=>{const c=e.target.closest(".post");if(c)openThread(c.dataset.id)});
+$("feed").addEventListener("keydown",e=>{if(e.key==="Enter"){const c=e.target.closest(".post");if(c)openThread(c.dataset.id)}});
+
+async function submitPost(){
+  const title=$("title").value.trim(),body=$("body").value.trim();
+  if(!title){$("title").focus();return}
+  if(!db){banner("Can’t post yet: the shared database isn’t available in this view. Try opening the page while signed in.");return}
+  $("postBtn").disabled=true;
+  try{
+    await db.collection("posts").add({title,body,category:$("cat").value,owner:uid||"anon",createdAt:Date.now()});
+    $("title").value="";$("body").value="";banner("");
+  }catch(e){banner(e&&e.code==="invalid_argument"?"You currently have view-only access, so you can’t post. Ask the page owner for Contributor access.":"Something went wrong posting. Please try again.")}
+  $("postBtn").disabled=false;
+}
+$("postBtn").onclick=submitPost;
+
+function openThread(id){
+  const p=posts.find(x=>x.id===id);if(!p)return;
+  openId=id;replies=[];confirmDel=null;
+  $("feedView").hidden=true;$("composer").hidden=true;$("threadView").hidden=false;window.scrollTo(0,0);
+  renderThreadPost(p);renderReplies();
+  if(unsubReplies)unsubReplies();
+  if(db)unsubReplies=db.collection("posts/"+id+"/replies").orderBy("createdAt","asc").limit(300).onSnapshot(s=>{replies=s.docs.map(d=>({id:d.id,...d.data()}));renderReplies()},()=>{});
+}
+function closeThread(){
+  if(unsubReplies)unsubReplies();unsubReplies=null;openId=null;
+  $("threadView").hidden=true;$("feedView").hidden=false;$("composer").hidden=false;
+}
+$("back").onclick=closeThread;
+
+function renderThreadPost(p){
+  const mine=uid&&p.owner===uid;
+  $("threadPost").innerHTML=`<span class="cat">${esc(p.category||"Other")}</span><h2 style="font-size:24px;margin:10px 0 8px">${esc(p.title)}</h2>
+    ${p.body?`<p class="snip" style="color:var(--ink)">${esc(p.body)}</p>`:""}
+    <div class="meta"><span class="who">${esc(handle(p.owner,p.id))}</span><span>·</span><span>${ago(p.createdAt)}</span>
+    ${(mine||isMod)?`<button class="link danger" id="delPost">${confirmDel==="post"?"Tap again to delete":"Delete"}</button>`:""}</div>`;
+  const d=$("delPost");if(d)d.onclick=async()=>{
+    if(confirmDel!=="post"){confirmDel="post";renderThreadPost(p);return}
+    try{for(const r of replies)await db.doc("posts/"+p.id+"/replies/"+r.id).delete();await db.doc("posts/"+p.id).delete();closeThread()}catch(e){banner("Couldn’t delete that post.")}
+  };
+}
+function renderReplies(){
+  const p=posts.find(x=>x.id===openId);if(!p){if(openId)closeThread();return}
+  $("replyHead").textContent=replies.length?`Advice (${replies.length})`:"Advice";
+  if(!replies.length){$("replyList").innerHTML=`<div class="empty">No replies yet. If you’ve been through something similar, your words could really help.</div>`;return}
+  $("replyList").innerHTML=replies.map(r=>{
+    const mine=uid&&r.owner===uid,op=r.owner===p.owner;
+    return `<div class="reply"><p>${esc(r.text)}</p><div class="meta" style="margin-top:4px"><span class="who">${esc(handle(r.owner,p.id))}</span>${op?`<span class="op">Asker</span>`:""}<span>·</span><span>${ago(r.createdAt)}</span>
+    ${(mine||isMod)?`<button class="link danger" data-r="${esc(r.id)}">${confirmDel===r.id?"Tap again":"Delete"}</button>`:""}</div></div>`}).join("");
+}
+$("replyList").addEventListener("click",async e=>{
+  const b=e.target.closest("button[data-r]");if(!b)return;const id=b.dataset.r;
+  if(confirmDel!==id){confirmDel=id;renderReplies();return}
+  confirmDel=null;try{await db.doc("posts/"+openId+"/replies/"+id).delete()}catch(x){banner("Couldn’t delete that reply.")}
+});
+$("replyBtn").onclick=async()=>{
+  const text=$("replyText").value.trim();if(!text)return;
+  if(!db){banner("Can’t reply yet: the shared database isn’t available in this view.");return}
+  $("replyBtn").disabled=true;
+  try{await db.collection("posts/"+openId+"/replies").add({text,owner:uid||"anon",createdAt:Date.now()});$("replyText").value="";banner("")}
+  catch(e){banner(e&&e.code==="invalid_argument"?"You currently have view-only access, so you can’t reply.":"Something went wrong. Please try again.")}
+  $("replyBtn").disabled=false;
+};
+
+renderChips();renderFeed();
+
+/* Demo storage: everything lives in this browser's localStorage */
+const KEY="quietask-demo-v1";
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY));if(s&&s.posts)return s}catch(e){}return null}
+function save(s){try{localStorage.setItem(KEY,JSON.stringify(s))}catch(e){}}
+function newId(){return Date.now().toString(36)+Math.random().toString(36).slice(2,6)}
+let me=null;try{me=localStorage.getItem("quietask-me");if(!me){me=newId()+newId();localStorage.setItem("quietask-me",me)}}catch(e){me=newId()}
+if(!load()){
+  const t=Date.now();
+  save({posts:[
+    {id:"s1",title:"How do you ask a professor for a recommendation letter?",body:"I\u2019m applying for summer programs and I\u2019m nervous about asking. Any tips on timing or what to say?",category:"Applications & scholarships",owner:"seed1",createdAt:t-7200000},
+    {id:"s2",title:"Feeling like I\u2019m the only one struggling this term",body:"Everyone seems to have it together. Is it normal to feel behind even when you worked hard to get here?",category:"Mental health & stress",owner:"seed2",createdAt:t-86400000}
+  ],replies:[
+    {id:"r1",postId:"s1",text:"Ask at least 3 to 4 weeks ahead, share your CV and a short note on what you want highlighted. Most professors are happy to help.",owner:"seed3",createdAt:t-3600000},
+    {id:"r2",postId:"s2",text:"Very normal. Nearly everyone feels this way, they just don\u2019t say it. Talking to one person you trust helps a lot.",owner:"seed4",createdAt:t-40000000}
+  ]});
+}
+const subs=[];
+function notify(){subs.slice().forEach(f=>f())}
+window.addEventListener("storage",notify);
+function snap(items){return{docs:items.map(i=>({id:i.id,data:()=>{const r={...i};delete r.id;return r}}))}}
+const localDb={
+  collection(path){
+    const p=path.split("/"),pid=p[1];
+    const q={
+      orderBy(){return q},limit(){return q},
+      async add(data){const s=load();if(p.length===1)s.posts.push({id:newId(),...data});else s.replies.push({id:newId(),postId:pid,...data});save(s);notify()},
+      onSnapshot(next){
+        const run=()=>{const s=load();let items;
+          if(p.length===1)items=s.posts.slice().sort((a,b)=>b.createdAt-a.createdAt);
+          else items=s.replies.filter(r=>r.postId===pid).sort((a,b)=>a.createdAt-b.createdAt);
+          next(snap(items))};
+        subs.push(run);run();
+        return()=>{const k=subs.indexOf(run);if(k>-1)subs.splice(k,1)};
+      }
+    };
+    return q;
+  },
+  doc(path){
+    const p=path.split("/");
+    return{async delete(){const s=load();
+      if(p.length===2){s.posts=s.posts.filter(x=>x.id!==p[1]);s.replies=s.replies.filter(x=>x.postId!==p[1])}
+      else s.replies=s.replies.filter(x=>x.id!==p[3]);
+      save(s);notify()}};
+  }
+};
+
+(function(){
+  db=localDb;uid=me;
+  banner("Demo mode: questions and replies are saved only in your own browser, so nobody else can see them.");
+  db.collection("posts").orderBy("createdAt","desc").limit(200).onSnapshot(s=>{
+    posts=s.docs.map(x=>({id:x.id,...x.data()}));
+    if(openId){const p=posts.find(x=>x.id===openId);if(p)renderThreadPost(p)}
+    if(!openId)renderFeed();
+  });
+})();
+</script>
+</body>
+</html>
